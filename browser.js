@@ -1,62 +1,76 @@
 var loadsvg = require('load-svg');
 var createsvg = require('svg-create-element');
 
-loadsvg('pinkcat2.svg', function (err, svg) {
+
+function createSprite (elems) {
+    var bounds = [];
+    for (var i = 0; i < elems.length; i++) {
+        elems[i].style.display = 'none';
+        console.log(elems[i]);
+        bounds[i] = elems[i].getBoundingClientRect();
+    }
+    var align = [];
+    for (var i = 1; i < elems.length; i++) {
+        align[i] = bounds[0].left - bounds[i].left;
+        elems[i].setAttribute(
+           "transform", "translate(" + align[i] + ", 0)"
+        );
+    }
+    return function () {
+        var g = document.createElement('g');
+        var frames = [];
+        for (var i = 0; i < elems.length; i++) {
+            var c = elems[i].cloneNode(true);
+            g.appendChild(c);
+            frames.push(c)
+        }
+        return {
+            element: g,
+            show: show,
+            move: move,
+            length: elems.length
+        };
+        function show (index) {
+            for (var i = 0; i < elems.length; i++) {
+                if (i == index){
+                    document.querySelector(
+                        '#' + frames[index].id
+                    ).style.display = 'block';
+                }
+                else {
+                    document.querySelector(
+                        '#' + frames[i].id
+                    ).style.display = 'none';
+                }
+            }
+        }
+        function move (index) {
+            var timeplus = 0 
+            setInterval(function (){
+                document.querySelector(
+                        '#' + frames[index].id
+                    ).setAttribute("transform", "translate(" +
+                timeplus%200 * -4 + ", " +
+                Math.sin(timeplus/2) * 10 + ")")
+                timeplus++
+            }, 50)
+        }
+    };
+}
+
+loadsvg('pinkcat2improved.svg', function (err, svg) {
     svg.setAttribute("height", "100%")
     svg.setAttribute("width", "100%")
     document.body.appendChild(svg);
+    //your #xxx0 group should be your first frame
     var k0 = document.querySelector('#kitty0')
     var k1 = document.querySelector('#kitty1')
     var k2 = document.querySelector('#kitty2')
-    var r0 = k0.getBoundingClientRect()
-    var r1 = k1.getBoundingClientRect()
-    var r2 = k2.getBoundingClientRect()
-    var x1 = r0.left - r1.left;
-    var g1 = grp([k1]);
-    g1.setAttribute("transform", "translate(" + x1 + ", 0)");
-    var g2 = grp([k2]);
-    var x2 = r0.left - r2.left;
-    g2.setAttribute("transform", "translate(" + x2 + ", 0)");
-    var times = 0
+    var createCat = createSprite([k0, k1, k2]);
+    var cat = createCat()
+    var index = 0;
     var iv = setInterval(function () {
-        if (times%4 == 0){
-            k0.style.display = 'block';
-            k1.style.display = 'none';
-            k2.style.display = 'none';
-        }
-        else if (times%4 == 1){
-            k0.style.display = 'none';
-            k1.style.display = 'block';
-            k2.style.display = 'none';
-        }
-        else if (times%4 == 2){
-            k0.style.display = 'none';
-            k1.style.display = 'none';
-            k2.style.display = 'block';
-        }
-        else {
-            k0.style.display = 'none';
-            k1.style.display = 'block';
-            k2.style.display = 'none';
-        }
-        times++
-    }, 250)
-    var kit = grp([g2, g1, k0])
-    window.kit = kit
-    var timeplus = 0 
-    var move = setInterval(function (){
-        kit.setAttribute("transform", "translate(" +
-        timeplus%200 * -4 + ", " + Math.sin(timeplus/2) * 10 + ")")
-        timeplus++
-    }, 50)
+        cat.show(index++ % cat.length)
+        }, 500 )
+    var mov = cat.move(1)
 });
-
-function grp (elems){
-    var g = createsvg('g')
-    elems[0].parentNode.insertBefore(g, elems[0])
-    elems.forEach(function (elem) {
-        elem.parentNode.removeChild(elem)
-        g.appendChild(elem)
-    })
-    return g
-} 
