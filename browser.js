@@ -48,7 +48,7 @@ function createSprite (elems) {
             var timeplus = 0 
             setInterval(function (){
                 document.querySelector(
-                        '#' + frames[index].id
+                      'g' 
                     ).setAttribute("transform", "translate(" +
                 timeplus%200 * -4 + ", " +
                 Math.sin(timeplus/2) * 10 + ")")
