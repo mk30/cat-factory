@@ -44,23 +44,21 @@ function createSprite (elems) {
                 }
             }
         }
-        function move (index) {
-            var timeplus = 0 
-            setInterval(function (){
+        function move (x, y) {
                 document.querySelector(
                       'g' 
-                    ).setAttribute("transform", "translate(" +
-                timeplus%200 * -4 + ", " +
-                Math.sin(timeplus/2) * 10 + ")")
-                timeplus++
-            }, 50)
-        }
+                    ).setAttribute(
+                        "transform", "translate(" +
+                        x + ", " +
+                       y + ")")
+            }
     };
 }
 
 loadsvg('pinkcat2improved.svg', function (err, svg) {
     svg.setAttribute("height", "100%")
     svg.setAttribute("width", "100%")
+    svg.setAttribute("align", "right")
     document.body.appendChild(svg);
     //your #xxx0 group should be your first frame
     var k0 = document.querySelector('#kitty0')
@@ -72,5 +70,10 @@ loadsvg('pinkcat2improved.svg', function (err, svg) {
     var iv = setInterval(function () {
         cat.show(index++ % cat.length)
         }, 500 )
-    var mov = cat.move(1)
+    var timeplus = 0
+    var move = setInterval(function () {
+            cat.move(200 + timeplus%200 * -4,
+                Math.sin(timeplus/2) * 10)
+            timeplus++
+            }, 50 )
 });
