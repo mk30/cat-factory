@@ -58,7 +58,6 @@ function createSprite (elems) {
 loadsvg('pinkcat2improved.svg', function (err, svg) {
     svg.setAttribute("height", "100%")
     svg.setAttribute("width", "100%")
-    svg.setAttribute("align", "right")
     document.body.appendChild(svg);
     //your #xxx0 group should be your first frame
     var k0 = document.querySelector('#kitty0')
@@ -72,7 +71,7 @@ loadsvg('pinkcat2improved.svg', function (err, svg) {
         }, 500 )
     var timeplus = 0
     var move = setInterval(function () {
-            cat.move(200 + timeplus%200 * -4,
+            cat.move(window.innerWidth + timeplus%200 * -10,
                 Math.sin(timeplus/2) * 10)
             timeplus++
             }, 50 )
